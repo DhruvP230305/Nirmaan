@@ -1,0 +1,395 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// enum String {
+//   BUYER
+//   MANUFACTURER
+//   ADMIN
+// }
+
+// enum String {
+//   OPEN
+//   IN_PROGRESS
+//   CLOSED
+//   CANCELLED
+// }
+
+// enum String {
+//   PENDING
+//   ACCEPTED
+//   REJECTED
+// }
+
+// enum String {
+//   PENDING
+//   CONFIRMED
+//   IN_PRODUCTION
+//   SHIPPED
+//   DELIVERED
+//   CANCELLED
+//   COMPLETED
+// }
+
+// enum String {
+//   UNPAID
+//   PARTIALLY_PAID
+//   PAID
+//   REFUNDED
+// }
+
+model User {
+  id                  String               @id @default(uuid())
+  email               String               @unique
+  passwordHash        String
+  name                String
+  phone               String?
+  companyName         String?
+  role                String                 @default("BUYER")
+  isVerified          Boolean              @default(false)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  buyerProfile        BuyerProfile?
+  manufacturerProfile ManufacturerProfile?
+  products            Product[]
+  rfqs                RFQ[]
+  quotes              Quote[]
+  buyerOrders         Order[]              @relation("BuyerOrders")
+  manufacturerOrders  Order[]              @relation("ManufacturerOrders")
+  buyerSamples        SampleRequest[]      @relation("BuyerSamples")
+  manufacturerSamples SampleRequest[]      @relation("ManufacturerSamples")
+  reviewsGiven        Review[]             @relation("ReviewsGiven")
+  reviewsReceived     Review[]             @relation("ReviewsReceived")
+  packagingProducts   PackagingProduct[]
+  packagingOrders     PackagingOrder[]
+  sentMessages        Message[]            @relation("SentMessages")
+  receivedMessages    Message[]            @relation("ReceivedMessages")
+
+  @@map("users")
+}
+
+model BuyerProfile {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessType String?
+  taxId        String?
+  address      String?
+  city         String?
+  country      String?
+  website      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("buyer_profiles")
+}
+
+model ManufacturerProfile {
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  factoryName        String
+  factoryAddress     String?
+  city               String?
+  country            String?
+  certifications     String @default("")
+  productionCapacity String?
+  minOrderQuantity   Int?
+  verificationStatus String   @default("PENDING")
+  rating             Float    @default(0)
+  qualityRating      Float    @default(0)
+  deliveryRating     Float    @default(0)
+  reviewCount        Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("manufacturer_profiles")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+
+  products    Product[]
+  rfqs        RFQ[]
+
+  @@map("categories")
+}
+
+model Product {
+  id               String    @id @default(uuid())
+  title            String
+  description      String
+  price            Float
+  minOrderQuantity Int       @default(1)
+  unit             String    @default("piece")
+  images           String @default("")
+  status           String    @default("ACTIVE") // ACTIVE, INACTIVE
+
+  manufacturerId   String
+  manufacturer     User      @relation(fields: [manufacturerId], references: [id], onDelete: Cascade)
+
+  categoryId       String?
+  category         Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  orders           Order[]
+  samples          SampleRequest[]
+
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@map("products")
+}
+
+model RFQ {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  targetPrice Float?
+  quantity    Int
+  unit        String    @default("piece")
+  status      String @default("OPEN")
+
+  buyerId     String
+  buyer       User      @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  quotes      Quote[]
+  orders      Order[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("rfqs")
+}
+
+model Quote {
+  id               String      @id @default(uuid())
+  unitPrice        Float
+  totalPrice       Float
+  deliveryTimeDays Int
+  notes            String?
+  status           String @default("PENDING")
+
+  rfqId            String
+  rfq              RFQ         @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+
+  manufacturerId   String
+  manufacturer     User        @relation(fields: [manufacturerId], references: [id], onDelete: Cascade)
+
+  orders           Order[]
+
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  @@map("quotes")
+}
+
+model Order {
+  id              String        @id @default(uuid())
+  orderNumber     String        @unique
+  quantity        Int
+  unitPrice       Float
+  totalAmount     Float
+  status          String   @default("PENDING")
+  paymentStatus   String @default("UNPAID")
+  shippingAddress String
+  notes           String?
+
+  buyerId         String
+  buyer           User          @relation("BuyerOrders", fields: [buyerId], references: [id], onDelete: Cascade)
+
+  manufacturerId  String
+  manufacturer    User          @relation("ManufacturerOrders", fields: [manufacturerId], references: [id], onDelete: Cascade)
+
+  productId       String?
+  product         Product?      @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  rfqId           String?
+  rfq             RFQ?          @relation(fields: [rfqId], references: [id], onDelete: SetNull)
+
+  quoteId         String?
+  quote           Quote?        @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+
+  milestones      Milestone[]
+  payments        Payment[]
+  reviews         Review[]
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("orders")
+}
+
+model Milestone {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  status      String    @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
+  dueDate     DateTime?
+  completedAt DateTime?
+
+  orderId     String
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("milestones")
+}
+
+// enum String {
+//   REQUESTED
+//   ACCEPTED
+//   SHIPPED
+//   DELIVERED
+//   APPROVED
+//   REJECTED
+//   CANCELLED
+// }
+
+model SampleRequest {
+  id             String       @id @default(uuid())
+  quantity       Int          @default(1)
+  price          Float
+  shippingCost   Float        @default(0)
+  status         String @default("REQUESTED")
+  trackingNumber String?
+  notes          String?
+
+  buyerId        String
+  buyer          User         @relation("BuyerSamples", fields: [buyerId], references: [id], onDelete: Cascade)
+
+  manufacturerId String
+  manufacturer   User         @relation("ManufacturerSamples", fields: [manufacturerId], references: [id], onDelete: Cascade)
+
+  productId      String?
+  product        Product?     @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@map("sample_requests")
+}
+
+// enum String {
+//   RAZORPAY
+//   STRIPE
+//   BANK_TRANSFER
+// }
+
+model Payment {
+  id                String          @id @default(uuid())
+  amount            Float
+  provider          String @default("RAZORPAY")
+  providerPaymentId String?
+  providerOrderId   String?
+  signature         String?
+  status            String   @default("UNPAID")
+
+  orderId           String
+  order             Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@map("payments")
+}
+
+model Review {
+  id             String   @id @default(uuid())
+  rating         Float
+  qualityRating  Float
+  deliveryRating Float
+  comment        String?
+
+  buyerId        String
+  buyer          User     @relation("ReviewsGiven", fields: [buyerId], references: [id], onDelete: Cascade)
+
+  manufacturerId String
+  manufacturer   User     @relation("ReviewsReceived", fields: [manufacturerId], references: [id], onDelete: Cascade)
+
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+
+  @@map("reviews")
+}
+
+model PackagingProduct {
+  id               String           @id @default(uuid())
+  title            String
+  category         String           // Box, Pouch, Card, Sticker, Shipping Bag
+  description      String
+  price            Float
+  minOrderQuantity Int              @default(100)
+  images           String @default("")
+  customizable     Boolean          @default(true)
+
+  supplierId       String
+  supplier         User             @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  orders           PackagingOrder[]
+
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@map("packaging_products")
+}
+
+model PackagingOrder {
+  id                 String           @id @default(uuid())
+  quantity           Int
+  unitPrice          Float
+  totalAmount        Float
+  status             String           @default("PENDING")
+  customLogoUrl      String?
+  notes              String?
+
+  buyerId            String
+  buyer              User             @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+
+  packagingProductId String
+  packagingProduct   PackagingProduct @relation(fields: [packagingProductId], references: [id], onDelete: Cascade)
+
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  @@map("packaging_orders")
+}
+
+model SystemLog {
+  id        String   @id @default(uuid())
+  message   String
+  createdAt DateTime @default(now())
+
+  @@map("system_logs")
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  content    String
+  isRead     Boolean  @default(false)
+  
+  senderId   String
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  
+  receiverId String
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  
+  createdAt  DateTime @default(now())
+
+  @@map("messages")
+}
