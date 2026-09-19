@@ -15,12 +15,13 @@
     "lucide-react": "^1.33.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-is": "^19.3.0",
     "react-router-dom": "^7.18.2",
     "recharts": "^3.10.1"
   },
   "optionalDependencies": {
-    "@rolldown/binding-win32-x64-msvc": "^1.2.5",
-    "@rolldown/binding-linux-x64-gnu": "^1.2.5"
+    "@rolldown/binding-linux-x64-gnu": "^1.2.5",
+    "@rolldown/binding-win32-x64-msvc": "^1.2.5"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",
