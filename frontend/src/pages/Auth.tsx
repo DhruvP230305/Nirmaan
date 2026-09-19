@@ -1,54 +1,66 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { ArrowRight, ShoppingBag, Factory, Eye, EyeOff, Check } from "lucide-react";
-import { Button, Input } from "../components/ui";
+import { ArrowRight, ShoppingBag, Factory, Eye, EyeOff, Check, Sparkles } from "lucide-react";
+import { Button, Chassis } from "../components/ui";
 import api from "../api/client";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth, UserRole } from "../contexts/AuthContext";
 
 function AuthShell({ children, title, subtitle }: { children: React.ReactNode; title: string; subtitle?: string }) {
   return (
-    <div className="min-h-screen bg-[#FAFAFA] flex">
-      {/* Left panel */}
-      <div className="hidden lg:flex w-96 bg-[#111827] flex-col p-10 justify-between shrink-0">
-        <Link to="/" className="font-display font-bold text-white text-xl">
-          Nirmaan<span className="text-brand-500">.</span>
-        </Link>
-        <div>
-          <p className="font-display text-3xl font-bold text-white mb-6 leading-tight">
-            The complete sourcing platform for D2C brands.
-          </p>
-          <div className="flex flex-col gap-3">
-            {["Verified manufacturers", "Low minimum orders from 50 pcs", "Sample before you bulk order", "Packaging & branding kits"].map((f) => (
-              <div key={f} className="flex items-center gap-3 text-sm text-[#9CA3AF]">
-                <Check size={14} className="text-brand-500 shrink-0" />
-                {f}
-              </div>
-            ))}
+    <Chassis className="min-h-[85vh] flex flex-col justify-center">
+      <div className="flex flex-col lg:flex-row gap-8 items-stretch max-w-5xl mx-auto w-full">
+        {/* Left Dark Bento Panel */}
+        <div className="lg:w-96 bento-card bg-[#111111] text-white flex flex-col p-8 justify-between shrink-0 shadow-2xl relative overflow-hidden">
+          <div
+            className="floating-orb w-64 h-64 -top-10 -right-10 pointer-events-none"
+            style={{ background: "radial-gradient(circle, rgba(217, 255, 54, 0.2) 0%, transparent 70%)" }}
+          />
+          <Link to="/" className="font-display font-black text-white text-2xl tracking-tight z-10">
+            Nirmaan<span className="text-[#2d62ed]">.</span>
+          </Link>
+          <div className="my-8 z-10">
+            <span className="text-[10px] font-mono-tech font-bold uppercase tracking-widest text-[#d9ff36] bg-white/10 px-3 py-1 rounded-full inline-block mb-3">
+              Prototype Live
+            </span>
+            <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-white mb-4 leading-snug">
+              Direct-to-Factory Sourcing OS
+            </h2>
+            <div className="flex flex-col gap-3">
+              {[
+                "Inspected Indian MSME factories",
+                "Minimum batch orders from 50 pcs",
+                "Rapid sample prototyping in 3 days",
+                "Synchronized business kit packaging",
+              ].map((f) => (
+                <div key={f} className="flex items-center gap-2.5 text-xs text-slate-300 font-medium">
+                  <Check size={14} className="text-[#d9ff36] shrink-0" />
+                  {f}
+                </div>
+              ))}
+            </div>
           </div>
+          <p className="text-xs text-slate-500 font-mono-tech z-10">© 2026 Nirmaan Marketplace Prototype</p>
         </div>
-        <p className="text-xs text-[#4B5563]">© 2026 Nirmaan</p>
-      </div>
 
-      {/* Right panel */}
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-md">
-          <div className="mb-8">
-            <Link to="/" className="lg:hidden font-display font-bold text-[#111827] text-xl block mb-6">
-              Nirmaan<span className="text-brand-500">.</span>
+        {/* Right Form Bento Card */}
+        <div className="flex-1 bento-card bg-white p-8 md:p-10 flex flex-col justify-center shadow-lg">
+          <div className="mb-6">
+            <Link to="/" className="lg:hidden font-display font-extrabold text-[#121316] text-xl block mb-4">
+              Nirmaan<span className="text-[#2d62ed]">.</span>
             </Link>
-            <h1 className="font-display text-2xl font-bold text-[#111827] mb-1">{title}</h1>
-            {subtitle && <p className="text-sm text-[#6B7280]">{subtitle}</p>}
+            <h1 className="font-display text-2xl md:text-3xl font-extrabold text-[#121316] tracking-tight">{title}</h1>
+            {subtitle && <p className="text-xs sm:text-sm text-[#6b7280] font-medium mt-1">{subtitle}</p>}
           </div>
           {children}
         </div>
       </div>
-    </div>
+    </Chassis>
   );
 }
 
 export function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, demoLogin } = useAuth();
   const [showPw, setShowPw] = useState(false);
   
   const [email, setEmail] = useState("");
@@ -70,65 +82,105 @@ export function Login() {
         } else {
           navigate("/dashboard");
         }
+        return;
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to login. Please check your credentials.");
+      console.warn("Backend login failed, allowing prototype fallback:", err);
+      // If demo email was entered, allow fallback
+      if (email.includes("buyer")) {
+        demoLogin("BUYER");
+        navigate("/dashboard");
+        return;
+      } else if (email.includes("mfr") || email.includes("factory")) {
+        demoLogin("MANUFACTURER");
+        navigate("/mfr/dashboard");
+        return;
+      } else if (email.includes("admin")) {
+        demoLogin("ADMIN");
+        navigate("/admin");
+        return;
+      }
+      setError("Credentials not recognized. You can click any 1-Click Prototype Demo login below!");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleQuickDemo = (role: UserRole, targetPath: string) => {
+    demoLogin(role);
+    navigate(targetPath);
+  };
+
   return (
-    <AuthShell title="Welcome back" subtitle="Sign in to your account to continue">
+    <AuthShell title="Console Sign In" subtitle="Sign in to your sourcing account or launch prototype instant demo">
       <form className="flex flex-col gap-4" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
-        {error && <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">{error}</div>}
+        {error && <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 p-3 rounded-2xl font-medium">{error}</div>}
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-[#374151]">Email address</label>
+          <label className="text-xs font-bold uppercase tracking-wider text-[#6b7280]">Email address</label>
           <input 
             type="email" 
-            placeholder="you@example.com" 
+            placeholder="buyer@d2c.com" 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-[#E5E7EB] bg-white rounded-lg text-sm text-[#111827] placeholder:text-[#9CA3AF] px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent" 
+            className="w-full border border-black/10 bg-white rounded-full text-xs font-medium text-[#121316] placeholder:text-[#9ca3af] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black/10 shadow-sm" 
           />
         </div>
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-[#374151]">Password</label>
-            <Link to="/forgot-password" className="text-xs text-brand-500 hover:underline">Forgot password?</Link>
+            <label className="text-xs font-bold uppercase tracking-wider text-[#6b7280]">Password</label>
+            <Link to="/forgot-password" className="text-xs text-[#2d62ed] hover:underline font-bold">Forgot password?</Link>
           </div>
           <div className="relative">
             <input
               type={showPw ? "text" : "password"}
-              placeholder="Enter your password"
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-[#E5E7EB] bg-white rounded-lg text-sm text-[#111827] placeholder:text-[#9CA3AF] px-4 py-2.5 pr-10 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+              className="w-full border border-black/10 bg-white rounded-full text-xs font-medium text-[#121316] placeholder:text-[#9ca3af] px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-black/10 shadow-sm"
             />
-            <button onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#374151]">
-              {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+            <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9ca3af] hover:text-[#121316]">
+              {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
             </button>
           </div>
         </div>
 
-        <Button variant="primary" size="lg" type="submit" disabled={loading} className="w-full mt-1">
-          {loading ? "Logging in..." : "Log in"}
+        <Button variant="primary" size="md" withArrow type="submit" disabled={loading} className="w-full mt-1 font-extrabold text-xs">
+          {loading ? "Signing in..." : "Sign In to Account"}
         </Button>
 
-        <div className="relative flex items-center gap-3 my-1">
-          <div className="flex-1 h-px bg-[#E5E7EB]" />
-          <span className="text-xs text-[#9CA3AF]">or</span>
-          <div className="flex-1 h-px bg-[#E5E7EB]" />
+        {/* 1-Click Prototype Demo Section */}
+        <div className="pt-3 border-t border-black/5 flex flex-col gap-2.5">
+          <p className="text-[11px] font-mono-tech font-bold uppercase tracking-wider text-[#6b7280] text-center">
+            ⚡ 1-Click Prototype Demo Access
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={() => handleQuickDemo("BUYER", "/dashboard")}
+              className="px-2.5 py-2 rounded-full bg-[#f4f3ee] hover:bg-[#111111] hover:text-[#d9ff36] text-[11px] font-bold text-[#121316] border border-black/5 transition-all cursor-pointer shadow-sm text-center"
+            >
+              Buyer Console
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickDemo("MANUFACTURER", "/mfr/dashboard")}
+              className="px-2.5 py-2 rounded-full bg-[#f4f3ee] hover:bg-[#111111] hover:text-[#d9ff36] text-[11px] font-bold text-[#121316] border border-black/5 transition-all cursor-pointer shadow-sm text-center"
+            >
+              Factory Console
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickDemo("ADMIN", "/admin")}
+              className="px-2.5 py-2 rounded-full bg-[#f4f3ee] hover:bg-[#111111] hover:text-[#d9ff36] text-[11px] font-bold text-[#121316] border border-black/5 transition-all cursor-pointer shadow-sm text-center"
+            >
+              Admin Panel
+            </button>
+          </div>
         </div>
 
-        <button type="button" disabled className="w-full border border-[#E5E7EB] bg-white rounded-lg py-2.5 text-sm font-medium text-[#9CA3AF] cursor-not-allowed flex items-center justify-center gap-3 transition-colors opacity-60">
-          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          Google — Coming soon
-        </button>
-
-        <p className="text-center text-sm text-[#6B7280]">
+        <p className="text-center text-xs text-[#6b7280] mt-1">
           Don't have an account?{" "}
-          <Link to="/register" className="text-brand-500 font-semibold hover:underline">Create one</Link>
+          <Link to="/register" className="text-[#2d62ed] font-bold hover:underline">Create one</Link>
         </p>
       </form>
     </AuthShell>

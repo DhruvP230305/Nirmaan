@@ -16,6 +16,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (token: string, user: User) => void;
+  demoLogin: (role: UserRole) => void;
   logout: () => void;
 }
 
@@ -27,17 +28,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const initializeAuth = async () => {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        try {
+          setUser(JSON.parse(savedUser));
+        } catch {}
+      }
+
       const token = localStorage.getItem('token');
-      if (token) {
+      if (token && token !== 'mock-prototype-token') {
         try {
           const response = await api.get('/auth/me');
           if (response.data.success) {
             setUser(response.data.data);
           }
         } catch (error) {
-          console.error('Failed to authenticate token', error);
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
+          console.warn('Backend offline, using cached/demo user session', error);
         }
       }
       setLoading(false);
@@ -52,6 +58,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(userData);
   };
 
+  const demoLogin = (role: UserRole) => {
+    const demoUsers: Record<UserRole, User> = {
+      BUYER: {
+        id: "demo-buyer-001",
+        name: "Jai Duggal",
+        email: "buyer@d2c.com",
+        role: "BUYER",
+        companyName: "Aether Lifestyle Brands",
+        isVerified: true,
+      },
+      MANUFACTURER: {
+        id: "demo-mfr-001",
+        name: "Amit Patel",
+        email: "mfr@factory.com",
+        role: "MANUFACTURER",
+        companyName: "Artisan Metals Co.",
+        isVerified: true,
+      },
+      ADMIN: {
+        id: "demo-admin-001",
+        name: "Operations Admin",
+        email: "admin@nirmaan.com",
+        role: "ADMIN",
+        companyName: "Nirmaan Operations",
+        isVerified: true,
+      },
+    };
+    login("mock-prototype-token", demoUsers[role]);
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -60,7 +96,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, demoLogin, logout }}>
       {children}
     </AuthContext.Provider>
   );

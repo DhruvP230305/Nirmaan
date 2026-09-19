@@ -12,6 +12,8 @@ import { useAuth } from "../contexts/AuthContext";
 import api from "../api/client";
 import { motion } from "framer-motion";
 
+import { getRequirements } from "../data/store";
+
 export default function BuyerDashboard() {
   return (
     <Chassis>
@@ -36,20 +38,23 @@ function DashboardHome() {
       try {
         setLoading(true);
         const res = await api.get('/rfqs');
-        if (res.data.success) {
-          setRequirements(res.data.data.slice(0, 5)); // Show only latest 5
+        if (res.data.success && res.data.data?.length > 0) {
+          setRequirements(res.data.data.slice(0, 5));
+          setLoading(false);
+          return;
         }
       } catch (err) {
-        console.error("Failed to fetch requirements", err);
-      } finally {
-        setLoading(false);
+        console.warn("RFQs API offline, loading prototype requirements:", err);
       }
+      const local = getRequirements();
+      setRequirements(local.slice(0, 5));
+      setLoading(false);
     };
     fetchRequirements();
   }, []);
 
-  const getFirstName = (name: string) => name ? name.split(" ")[0] : "User";
-  const activeReqs = requirements.filter(r => r.status === 'OPEN' || r.status === 'IN_PROGRESS').length;
+  const getFirstName = (name: string) => name ? name.split(" ")[0] : "Jai";
+  const activeReqs = requirements.length > 0 ? requirements.length : 3;
 
   const container = {
     hidden: { opacity: 0 },
@@ -65,26 +70,29 @@ function DashboardHome() {
       
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl font-extrabold text-ink flex items-center gap-2">
-            Good morning, {user ? getFirstName(user.name) : 'User'} <span className="animate-bounce-slow">👋</span>
+          <span className="text-xs font-mono-tech font-bold uppercase tracking-wider text-[#2d62ed]">
+            Buyer Operating Console · Live Prototype
+          </span>
+          <h1 className="font-display text-3xl font-extrabold text-[#121316] flex items-center gap-2 mt-0.5">
+            Good morning, {user ? getFirstName(user.name) : 'Jai'} <span className="animate-bounce-slow">👋</span>
           </h1>
-          <p className="text-sm font-semibold text-ink-3 mt-1.5 flex items-center gap-2">
-            <Sparkles size={14} className="text-brand-500" /> Here's what's happening with your sourcing today.
+          <p className="text-xs sm:text-sm font-semibold text-[#6b7280] mt-1 flex items-center gap-2">
+            <Sparkles size={14} className="text-[#2d62ed]" /> Direct factory quotes and sample tracking active.
           </p>
         </div>
         <Link to="/post-requirement">
-          <Button variant="primary" size="lg" className="shadow-sm">
-            <Plus size={18} className="mr-2" /> Post Requirement
+          <Button variant="primary" size="md" withArrow className="font-extrabold text-xs">
+            <Plus size={15} /> Post New Requirement
           </Button>
         </Link>
       </motion.div>
 
       {/* Stats */}
-      <motion.div variants={container} initial="hidden" animate="show" className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <motion.div variants={item}><StatCard label="Active Requirements" value={activeReqs} sub="Awaiting quotes" icon={<FileText size={20} className="text-brand-600" />} /></motion.div>
-        <motion.div variants={item}><StatCard label="New Quotes" value={0} sub="Awaiting review" icon={<TrendingUp size={20} className="text-success" />} /></motion.div>
-        <motion.div variants={item}><StatCard label="Pending Samples" value={0} sub="In transit" icon={<Package2 size={20} className="text-warning" />} /></motion.div>
-        <motion.div variants={item}><StatCard label="Active Orders" value={0} sub="In production" icon={<ShoppingBag size={20} className="text-blue-500" />} /></motion.div>
+      <motion.div variants={container} initial="hidden" animate="show" className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <motion.div variants={item}><StatCard label="Active Requirements" value={activeReqs} sub="Awaiting quotes" icon={<FileText size={20} className="text-[#121316]" />} /></motion.div>
+        <motion.div variants={item}><StatCard label="New Quotes" value={4} sub="Ready to compare" icon={<TrendingUp size={20} className="text-[#2d62ed]" />} /></motion.div>
+        <motion.div variants={item}><StatCard label="Pending Samples" value={2} sub="In transit (DTDC)" icon={<Package2 size={20} className="text-[#121316]" />} /></motion.div>
+        <motion.div variants={item}><StatCard label="Active Orders" value={3} sub="In batch production" icon={<ShoppingBag size={20} className="text-[#10b981]" />} /></motion.div>
       </motion.div>
 
       <div className="grid lg:grid-cols-[1fr_300px] gap-8">
