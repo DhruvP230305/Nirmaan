@@ -1,20 +1,19 @@
 import { Link } from "react-router-dom";
 import {
-  CheckCircle, ArrowRight, Shield, Package, Zap,
-  TrendingDown, Layers, FlaskConical, Play
+  CheckCircle, ArrowUpRight, Shield, Package, Zap,
+  TrendingDown, Layers, FlaskConical, Play, Sparkles, Factory
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
-import { Button } from "../components/ui";
-import { motion, useAnimation, useInView } from "framer-motion";
+import { Button, Chassis } from "../components/ui";
+import { motion } from "framer-motion";
 
-// Helper component for count up
 function Counter({ value, suffix = "" }: { value: number; suffix?: string }) {
   const [count, setCount] = useState(0);
-  
+
   useEffect(() => {
     let start = 0;
-    const duration = 2000;
+    const duration = 1800;
     const increment = value / (duration / 16);
     const timer = setInterval(() => {
       start += increment;
@@ -32,365 +31,441 @@ function Counter({ value, suffix = "" }: { value: number; suffix?: string }) {
 }
 
 const features = [
-  { icon: Shield, title: "Verified Manufacturers", desc: "Every manufacturer goes through document verification, capability checks, and quality review before listing." },
-  { icon: TrendingDown, title: "Low Minimum Orders", desc: "Start small. Most suppliers on our platform accept orders from just 50 pieces — perfect for new brands." },
-  { icon: FlaskConical, title: "Sample Before Bulk", desc: "Request a physical product sample before committing to a bulk order. Zero risk product validation." },
-  { icon: Layers, title: "Custom Manufacturing", desc: "Logo, colour, material, packaging — customise every aspect of your product for your brand." },
-  { icon: Package, title: "Packaging & Branding", desc: "Source boxes, pouches, stickers, and thank-you cards from the same platform. One complete kit." },
-  { icon: Zap, title: "One Complete Journey", desc: "From product idea to ready-to-sell inventory — manage everything in one single dashboard." },
+  {
+    icon: Shield,
+    title: "Verified Manufacturers",
+    desc: "Every factory undergoes strict on-site document audits, capability verification, and batch testing before listing.",
+    tag: "Audit Score 99.4%"
+  },
+  {
+    icon: TrendingDown,
+    title: "Low Minimum Orders",
+    desc: "Test new product lines without massive inventory liability. Most partners accept initial runs from just 50 units.",
+    tag: "MOQ From 50 pcs"
+  },
+  {
+    icon: FlaskConical,
+    title: "Sample Before Bulk",
+    desc: "Hold the physical prototype in your hands before committing to bulk capital. Zero risk product validation.",
+    tag: "Fast 3-Day Dispatch"
+  },
+  {
+    icon: Layers,
+    title: "Full Customization",
+    desc: "Custom tooling, Pantone color matching, private label engraving, and specialized surface finishes for your brand.",
+    tag: "Bespoke Specs"
+  },
+  {
+    icon: Package,
+    title: "Branded Packaging Kits",
+    desc: "Source custom rigid boxes, embossed velvet pouches, inserts, and tamper-proof stickers concurrently.",
+    tag: "One Consolidated Kit"
+  },
+  {
+    icon: Zap,
+    title: "Transparent Milestones",
+    desc: "Track raw material sourcing, mold fabrication, assembly, QA, and dispatch right inside your console.",
+    tag: "Realtime Escrow"
+  },
 ];
 
 export default function Landing() {
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.2 }
-    }
-  };
-
-  const fadeUp = {
-    hidden: { opacity: 0, y: 30 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-  };
-
   return (
-    <div className="min-h-screen bg-surface selection:bg-brand-500 selection:text-white">
+    <Chassis>
       <Navbar />
 
-      {/* Premium Hero */}
-      <section className="relative overflow-hidden bg-white pt-32 pb-24 lg:pt-40 lg:pb-32 border-b border-border">
-        {/* Subtle background glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] opacity-[0.15] pointer-events-none" 
-             style={{ background: "radial-gradient(ellipse at top, var(--color-brand-500), transparent 70%)" }} />
+      {/* Hero Bento Showcase Grid (2.2fr : 1fr layout per design.md) */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* Animated Grid Background */}
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none mix-blend-overlay"></div>
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(228,228,231,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(228,228,231,0.3)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none"></div>
+        {/* Large Main Bento Hero Card (Left ~ 8 cols) */}
+        <div className="lg:col-span-8 bento-card p-8 md:p-12 flex flex-col justify-between relative overflow-hidden bg-white">
+          {/* Subtle Ambient Radial Glow */}
+          <div
+            className="floating-orb w-96 h-96 -top-20 -right-20 pointer-events-none"
+            style={{
+              background: "radial-gradient(circle, rgba(45, 98, 237, 0.12) 0%, rgba(217, 255, 54, 0.08) 50%, transparent 70%)"
+            }}
+          />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 text-center">
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate="show"
-            className="flex flex-col items-center"
-          >
-            <motion.div variants={fadeUp} className="inline-flex items-center gap-2 bg-brand-50/80 backdrop-blur-md text-brand-700 text-xs font-bold uppercase tracking-widest px-5 py-2 rounded-full mb-8 border border-brand-200 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-brand-500 animate-pulse-slow" />
-              The Sourcing Platform for D2C Brands
-            </motion.div>
-            
-            <motion.h1 variants={fadeUp} className="font-display text-5xl md:text-6xl lg:text-7xl font-extrabold text-ink leading-[1.1] tracking-tight mb-8 max-w-4xl mx-auto">
-              Build Your Business.<br />
-              <span className="text-gradient">Source Everything.</span>
-            </motion.h1>
-            
-            <motion.p variants={fadeUp} className="text-lg md:text-xl text-ink-3 leading-relaxed mb-10 max-w-2xl mx-auto font-medium">
-              Find verified manufacturers, source at low MOQ, request samples, customize products, and build your brand — all in one place.
-            </motion.p>
-            
-            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-5 w-full sm:w-auto">
-              <Link to="/post-requirement" className="w-full sm:w-auto">
-                <Button variant="primary" size="lg" className="w-full sm:w-auto px-8 py-4 text-base group">
-                  Start Sourcing Free 
-                  <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
+          <div className="relative z-10">
+            <div className="flex flex-wrap items-center gap-2.5 mb-6">
+              <span className="inline-flex items-center gap-1.5 bg-[#f4f3ee] text-[#121316] text-xs font-mono-tech font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-full border border-black/5 shadow-sm">
+                <span className="live-bullet" />
+                D2C Sourcing Chassis 2026
+              </span>
+              <span className="inline-flex items-center gap-1 bg-[#d9ff36]/30 text-[#121316] text-xs font-bold px-3 py-1 rounded-full border border-[#cbff14]/60">
+                <Sparkles size={12} className="text-[#2d62ed]" /> Direct Factory Rates
+              </span>
+            </div>
+
+            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold text-[#121316] leading-[1.08] tracking-tight mb-6 max-w-2xl">
+              Build Your Brand.<br />
+              <span className="text-[#2d62ed]">Source Everything.</span>
+            </h1>
+
+            <p className="text-base md:text-lg text-[#6b7280] leading-relaxed max-w-xl font-medium mb-8">
+              Connect with vetted high-precision manufacturers, order verified physical samples, bundle custom branded packaging, and scale your brand seamlessly.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-4">
+              <Link to="/post-requirement" className="cta-lime-btn">
+                <span>Start Sourcing Free</span>
+                <div className="cta-arrow-circle">↗</div>
+              </Link>
+              <Link to="/discover">
+                <Button variant="outline" size="md" className="font-extrabold text-xs">
+                  Browse Catalog
                 </Button>
               </Link>
-              <Link to="/manufacturers" className="w-full sm:w-auto">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto px-8 py-4 text-base shadow-sm">
-                  <Play size={18} className="mr-2 text-ink-3" fill="currentColor" /> Watch Demo
-                </Button>
-              </Link>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
-          {/* Sourcing Network Visual */}
-          <motion.div 
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.6, type: "spring" }}
-            className="mt-20 max-w-5xl mx-auto relative hidden md:block"
-          >
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/90 z-10 top-1/2 pointer-events-none"></div>
-            <div className="relative bg-surface/50 backdrop-blur-xl rounded-3xl p-8 border border-border/80 shadow-2xl flex items-center justify-between overflow-hidden">
-              
-              {/* Connecting Line */}
-              <div className="absolute top-1/2 left-10 right-10 h-0.5 bg-gradient-to-r from-brand-200 via-brand-400 to-brand-200 -translate-y-1/2 z-0 opacity-50">
-                <motion.div 
-                  className="absolute inset-0 bg-brand-500 blur-sm"
-                  initial={{ x: "-100%" }}
-                  animate={{ x: "100%" }}
-                  transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
-                />
+          {/* Micro Specs Pill Strip */}
+          <div className="relative z-10 mt-10 pt-6 border-t border-black/5 flex flex-wrap items-center gap-4 text-xs font-semibold text-[#6b7280]">
+            <div className="flex items-center gap-2">
+              <CheckCircle size={15} className="text-[#10b981]" />
+              <span className="text-[#121316]">Verified Indian MSMEs</span>
+            </div>
+            <span className="text-black/15">•</span>
+            <div className="flex items-center gap-2">
+              <CheckCircle size={15} className="text-[#10b981]" />
+              <span className="text-[#121316]">Zero Commission Markup</span>
+            </div>
+            <span className="text-black/15">•</span>
+            <div className="flex items-center gap-2">
+              <CheckCircle size={15} className="text-[#10b981]" />
+              <span className="text-[#121316]">Escrow Protected Payments</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Stack: 2 Bento Tiles (Right ~ 4 cols) */}
+        <div className="lg:col-span-4 flex flex-col gap-6">
+          
+          {/* Tile 1: Dark Tech Visualizer Screen (Section 7F) */}
+          <div className="bento-card bg-[#0f172a] text-white p-6 flex flex-col justify-between border-none shadow-xl">
+            <div className="flex items-center justify-between text-xs font-mono-tech text-[#94a3b8]">
+              <span className="tracking-wider">PRODUCTION LINE: LIVE</span>
+              <span className="rec-dot" />
+            </div>
+
+            <div className="my-6">
+              <div className="flex items-baseline justify-between mb-2">
+                <span className="text-xs font-mono-tech text-[#94a3b8]">BATCH #NM-9824</span>
+                <span className="text-xs font-mono-tech text-[#d9ff36] font-bold">98.4% YIELD</span>
               </div>
 
-              {/* Nodes */}
-              {[
-                { icon: "💡", label: "Idea", delay: 0 },
-                { icon: "🏭", label: "Factory", delay: 0.2 },
-                { icon: "🧪", label: "Sample", delay: 0.4 },
-                { icon: "📦", label: "Production", delay: 0.6 },
-                { icon: "🎁", label: "Packaging", delay: 0.8 },
-                { icon: "🚀", label: "Launch", delay: 1.0 },
-              ].map((step, idx) => (
-                <motion.div 
-                  key={step.label}
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.8 + step.delay, type: "spring", stiffness: 200 }}
-                  className="relative z-10 flex flex-col items-center gap-4 group cursor-default"
-                >
-                  <div className="w-16 h-16 rounded-2xl bg-white border border-border/80 shadow-lg flex items-center justify-center text-3xl group-hover:-translate-y-2 group-hover:shadow-brand transition-all duration-300">
-                    {step.icon}
-                  </div>
-                  <span className="text-xs font-bold text-ink-2 uppercase tracking-wider bg-white/80 px-3 py-1 rounded-full shadow-sm">{step.label}</span>
-                </motion.div>
-              ))}
+              {/* Animated Frequency Bars */}
+              <div className="bg-slate-900/80 rounded-2xl p-4 border border-slate-800 flex items-end justify-between h-20 gap-1.5">
+                {[60, 85, 45, 95, 70, 90, 50, 80, 65, 100, 75, 88].map((h, i) => (
+                  <div
+                    key={i}
+                    className="w-full rounded-full"
+                    style={{
+                      height: `${h}%`,
+                      backgroundColor: i % 3 === 0 ? "#d9ff36" : i % 2 === 0 ? "#2d62ed" : "#38bdf8",
+                      animation: `eqBounce 1.${(i % 5) + 2}s infinite ease-in-out alternate`,
+                      animationDelay: `${i * 0.08}s`
+                    }}
+                  />
+                ))}
+              </div>
             </div>
-          </motion.div>
+
+            <div className="flex items-center justify-between text-[11px] font-mono-tech text-[#94a3b8] pt-3 border-t border-slate-800/80">
+              <span>LATENCY: 1.2s</span>
+              <span className="text-[#38bdf8] font-bold">CALIBRATED</span>
+            </div>
+          </div>
+
+          {/* Tile 2: Quick Manufacturer Spotlight Bento */}
+          <div className="bento-card p-6 flex flex-col justify-between bg-white">
+            <div className="flex items-start justify-between">
+              <div>
+                <span className="text-[11px] font-mono-tech font-bold uppercase tracking-wider text-[#6b7280]">
+                  Factory Spotlight
+                </span>
+                <h3 className="font-display font-extrabold text-xl text-[#121316] mt-0.5">
+                  Artisan Metals Co.
+                </h3>
+              </div>
+              <Link to="/manufacturers" className="cta-arrow-circle w-8 h-8 text-xs">
+                ↗
+              </Link>
+            </div>
+
+            <div className="my-4 p-3.5 bg-[#f9f8f5] rounded-2xl flex items-center justify-between text-xs">
+              <div>
+                <p className="text-[#6b7280]">Category</p>
+                <p className="font-bold text-[#121316]">Brass & Sterling Jewelry</p>
+              </div>
+              <div className="text-right">
+                <p className="text-[#6b7280]">Capacity</p>
+                <p className="font-bold text-[#2d62ed] font-mono-tech">45K units/mo</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="inline-flex items-center gap-1 text-xs font-extrabold text-[#121316]">
+                ★ 4.9 <span className="font-normal text-[#6b7280]">(142 orders)</span>
+              </span>
+              <span className="text-xs font-mono-tech font-bold text-[#10b981] bg-[#ecfdf5] px-2.5 py-1 rounded-full">
+                ISO 9001 Certified
+              </span>
+            </div>
+          </div>
+
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-white border-b border-border relative z-20 -mt-10 mx-4 md:mx-auto max-w-5xl rounded-2xl shadow-xl shadow-ink/5">
-        <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
-          <div className="text-center px-4 py-2">
-            <h3 className="font-display text-3xl md:text-4xl font-extrabold text-brand-600 mb-1"><Counter value={500} suffix="+" /></h3>
-            <p className="text-xs md:text-sm font-bold text-ink-3 uppercase tracking-wider">Verified Factories</p>
+      {/* Stats Bento Strip */}
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: "Verified Factories", value: 500, suffix: "+", sub: "On-site inspected" },
+          { label: "Active D2C Brands", value: 1200, suffix: "+", sub: "Growing with us" },
+          { label: "Manufacturing Hubs", value: 50, suffix: "+", sub: "Pan-India presence" },
+          { label: "Orders Fulfilled", value: 25000, suffix: "+", sub: "99.8% on-time delivery" },
+        ].map((stat, i) => (
+          <div key={i} className="bento-card p-5 bg-white text-center sm:text-left">
+            <p className="text-[11px] font-mono-tech font-bold text-[#6b7280] uppercase tracking-wider mb-1">
+              {stat.label}
+            </p>
+            <p className="font-display text-2xl sm:text-3xl font-extrabold text-[#121316] tracking-tight">
+              <Counter value={stat.value} suffix={stat.suffix} />
+            </p>
+            <p className="text-xs font-medium text-[#9ca3af] mt-1">{stat.sub}</p>
           </div>
-          <div className="text-center px-4 py-2">
-            <h3 className="font-display text-3xl md:text-4xl font-extrabold text-brand-600 mb-1"><Counter value={1200} suffix="+" /></h3>
-            <p className="text-xs md:text-sm font-bold text-ink-3 uppercase tracking-wider">Active Brands</p>
-          </div>
-          <div className="text-center px-4 py-2">
-            <h3 className="font-display text-3xl md:text-4xl font-extrabold text-brand-600 mb-1"><Counter value={50} suffix="+" /></h3>
-            <p className="text-xs md:text-sm font-bold text-ink-3 uppercase tracking-wider">Categories</p>
-          </div>
-          <div className="text-center px-4 py-2">
-            <h3 className="font-display text-3xl md:text-4xl font-extrabold text-brand-600 mb-1">₹<Counter value={50} suffix="M+" /></h3>
-            <p className="text-xs md:text-sm font-bold text-ink-3 uppercase tracking-wider">Sourced Volume</p>
-          </div>
-        </div>
+        ))}
       </section>
 
-      {/* The Problem & Solution */}
-      <section className="py-24 md:py-32 bg-ink relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] pointer-events-none mix-blend-overlay"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={staggerContainer}
-            >
-              <motion.p variants={fadeUp} className="text-brand-500 font-bold tracking-widest uppercase text-xs mb-4">The Old Way</motion.p>
-              <motion.h2 variants={fadeUp} className="font-display text-4xl md:text-5xl font-bold mb-8 text-white">Fragmented. Slow. Unreliable.</motion.h2>
-              <motion.div variants={fadeUp} className="flex items-center gap-4 text-ink-3 font-semibold text-lg md:text-xl mb-8 flex-wrap">
-                <span className="line-through decoration-danger decoration-2 opacity-60">Search</span> <ArrowRight size={18} className="opacity-40" />
-                <span className="line-through decoration-danger decoration-2 opacity-60">Call</span> <ArrowRight size={18} className="opacity-40" />
-                <span className="line-through decoration-danger decoration-2 opacity-60">Travel</span> <ArrowRight size={18} className="opacity-40" />
-                <span className="line-through decoration-danger decoration-2 opacity-60">Negotiate</span>
-              </motion.div>
-            </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, type: "spring" }}
-              className="bg-ink-2 rounded-3xl p-10 md:p-12 border border-ink-3/20 relative overflow-hidden shadow-2xl"
-            >
-              <div className="absolute -top-32 -right-32 w-96 h-96 bg-brand-500 blur-[120px] opacity-20 rounded-full pointer-events-none" />
-              <p className="text-brand-500 font-bold tracking-widest uppercase text-xs mb-4">The Nirmaan Way</p>
-              <h2 className="font-display text-4xl font-extrabold mb-6 text-white tracking-tight">One Platform.<br/>One Workflow.</h2>
-              <p className="text-ink-3 text-lg leading-relaxed font-medium">
-                We've digitized the entire procurement lifecycle. Find the best supplier, compare standard quotes, approve physical samples, and attach your custom branding without ever leaving the dashboard.
-              </p>
-            </motion.div>
+      {/* The Problem & Solution Split Bento */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        
+        {/* Left: The Old Fragile Way */}
+        <div className="lg:col-span-5 bento-card p-8 bg-[#f4f3ee] flex flex-col justify-between border-dashed border-black/15">
+          <div>
+            <span className="text-[11px] font-mono-tech font-bold text-[#ef4444] uppercase tracking-wider bg-[#fee2e2] px-3 py-1 rounded-full inline-block mb-4">
+              Traditional Offline Sourcing
+            </span>
+            <h3 className="font-display text-2xl md:text-3xl font-extrabold text-[#121316] mb-4">
+              Fragmented. Unpredictable. Opaque.
+            </h3>
+            <p className="text-sm text-[#6b7280] leading-relaxed mb-6 font-medium">
+              Searching directories without verification, chasing calls, traveling to industrial clusters, dealing with arbitrary middlemen markups, and risking capital on untested bulk orders.
+            </p>
           </div>
-        </div>
-      </section>
 
-      {/* Why Nirmaan */}
-      <section className="py-24 md:py-32 bg-surface">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-16 md:mb-24">
-            <h2 className="font-display text-4xl md:text-5xl font-extrabold text-ink mb-6 tracking-tight">Built for Modern Brands</h2>
-            <p className="text-ink-3 text-lg md:text-xl max-w-2xl mx-auto font-medium">Everything you need to source reliably, quickly, and at premium quality without the traditional complexity.</p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {features.map((f, i) => (
-              <motion.div 
-                key={f.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
-                className="bg-white p-8 rounded-3xl border border-border hover:border-brand-300 hover:shadow-xl transition-all duration-300 group"
-              >
-                <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mb-8 group-hover:-translate-y-2 transition-transform duration-300 shadow-sm border border-brand-100">
-                  <f.icon size={26} className="text-brand-600" />
-                </div>
-                <h3 className="font-display text-xl font-bold text-ink mb-3 group-hover:text-brand-600 transition-colors">{f.title}</h3>
-                <p className="text-ink-3 leading-relaxed font-medium text-sm md:text-base">{f.desc}</p>
-              </motion.div>
+          <div className="space-y-2.5">
+            {["High MOQ hurdles (5,000+ units)", "No standardized quality recourse", "Scattered packaging suppliers"].map((item, idx) => (
+              <div key={idx} className="flex items-center gap-2.5 text-xs font-bold text-[#121316] bg-white/70 p-3 rounded-xl border border-black/5">
+                <span className="text-[#ef4444]">✕</span>
+                <span>{item}</span>
+              </div>
             ))}
           </div>
         </div>
+
+        {/* Right: The Nirmaan Chassis Way */}
+        <div className="lg:col-span-7 bento-card p-8 md:p-10 bg-[#111111] text-white flex flex-col justify-between relative overflow-hidden shadow-2xl">
+          <div
+            className="floating-orb w-80 h-80 -bottom-20 -right-20 pointer-events-none"
+            style={{
+              background: "radial-gradient(circle, rgba(217, 255, 54, 0.15) 0%, rgba(45, 98, 237, 0.2) 50%, transparent 70%)"
+            }}
+          />
+
+          <div className="relative z-10">
+            <span className="text-[11px] font-mono-tech font-bold text-[#0d0e11] uppercase tracking-wider bg-[#d9ff36] px-3.5 py-1 rounded-full inline-block mb-4">
+              The Nirmaan Operating System
+            </span>
+            <h3 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-4 tracking-tight">
+              One Unified Console.<br />
+              Zero Sourcing Friction.
+            </h3>
+            <p className="text-sm md:text-base text-slate-300 leading-relaxed max-w-xl font-medium mb-8">
+              Every stage digitized into one clean workflow. Direct verified manufacturer quotes, paid sample dispatch within days, and synchronized custom packaging.
+            </p>
+          </div>
+
+          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              { title: "Standardized Quotes", desc: "Compare unit economics transparently" },
+              { title: "Physical Samples First", desc: "Test real parts before committing capital" },
+              { title: "Low Initial Runs", desc: "Batch manufacture from 50 pieces" },
+              { title: "Integrated Packaging", desc: "Boxes, pouches, inserts in one PO" },
+            ].map((box, i) => (
+              <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-4 backdrop-blur-sm">
+                <p className="text-xs font-bold text-[#d9ff36] font-mono-tech mb-0.5">0{i + 1} · {box.title}</p>
+                <p className="text-xs text-slate-400 font-medium">{box.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </section>
 
-      {/* Business Kit Feature */}
-      <section className="py-24 md:py-32 bg-white border-y border-border overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid lg:grid-cols-2 gap-16 md:gap-24 items-center">
-            
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, type: "spring" }}
-              className="order-2 lg:order-1 relative"
-            >
-              <div className="absolute inset-0 bg-brand-500 blur-[100px] opacity-[0.08] rounded-full pointer-events-none" />
-              
-              {/* Stacked Cards Animation */}
-              <div className="relative h-[450px] w-full flex items-center justify-center">
-                {[
-                  { icon: "💎", name: "200 Custom Earrings", price: "₹45/pc", rotate: -6, z: 10 },
-                  { icon: "📦", name: "200 Jewellery Boxes", price: "₹15/pc", rotate: -2, z: 20 },
-                  { icon: "🛍️", name: "200 Velvet Pouches", price: "₹12/pc", rotate: 2, z: 30 },
-                  { icon: "💌", name: "200 Thank You Cards", price: "₹4/pc", rotate: 6, z: 40 },
-                ].map((item, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 100, rotate: 0 }}
-                    whileInView={{ opacity: 1, y: i * 15 - 30, rotate: item.rotate }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ delay: i * 0.15, type: "spring", stiffness: 100, damping: 15 }}
-                    className="absolute bg-white rounded-2xl border border-border/80 shadow-2xl p-6 w-[320px] glass"
-                    style={{ zIndex: item.z }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-surface flex items-center justify-center text-2xl shadow-inner border border-border/50">
-                          {item.icon}
-                        </div>
-                        <span className="font-bold text-ink">{item.name}</span>
-                      </div>
-                      <span className="font-bold text-brand-600 bg-brand-50 px-2 py-1 rounded-lg text-sm">{item.price}</span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              variants={staggerContainer}
-              className="order-1 lg:order-2"
-            >
-              <motion.p variants={fadeUp} className="text-brand-500 font-bold tracking-widest uppercase text-xs mb-4">The Differentiator</motion.p>
-              <motion.h2 variants={fadeUp} className="font-display text-4xl lg:text-5xl font-extrabold text-ink mb-6 tracking-tight">The Complete<br/>Business Kit</motion.h2>
-              <motion.p variants={fadeUp} className="text-lg text-ink-3 leading-relaxed mb-8 font-medium">
-                Don't just source a product. Source a brand. Nirmaan allows you to bundle your core product with custom packaging, boxes, inserts, and stickers from specialized suppliers into one cohesive order.
-              </motion.p>
-              <motion.ul variants={fadeUp} className="space-y-4 mb-10">
-                {[
-                  "Match product quantities with packaging",
-                  "Synchronized production timelines",
-                  "Consolidated shipping options",
-                  "Zero scattered communication"
-                ].map((point, i) => (
-                  <li key={i} className="flex items-center gap-4 text-ink font-semibold">
-                    <div className="w-6 h-6 rounded-full bg-success/10 flex items-center justify-center text-success shrink-0">
-                      <CheckCircle size={14} strokeWidth={3} />
-                    </div>
-                    {point}
-                  </li>
-                ))}
-              </motion.ul>
-              <motion.div variants={fadeUp}>
-                <Link to="/register">
-                  <Button variant="primary" size="lg" className="shadow-brand">Explore Packaging <ArrowRight size={16} className="ml-2" /></Button>
-                </Link>
-              </motion.div>
-            </motion.div>
+      {/* Feature Bento Grid (6 Tiles) */}
+      <section className="flex flex-col gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <span className="text-xs font-mono-tech font-bold uppercase tracking-wider text-[#2d62ed]">
+              Platform Architecture
+            </span>
+            <h2 className="font-display text-3xl md:text-4xl font-extrabold text-[#121316] tracking-tight mt-1">
+              Engineered for Modern D2C
+            </h2>
           </div>
+          <Link to="/how-it-works">
+            <Button variant="outline" size="sm" className="font-bold text-xs">
+              Explore All Capabilities ↗
+            </Button>
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {features.map((f, i) => (
+            <div key={f.title} className="bento-card p-7 bg-white flex flex-col justify-between group">
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-[#f9f8f5] group-hover:bg-[#111111] group-hover:text-[#d9ff36] transition-all flex items-center justify-center border border-black/5 text-[#121316] shadow-sm">
+                    <f.icon size={22} />
+                  </div>
+                  <span className="text-[10px] font-mono-tech font-bold uppercase tracking-wider bg-[#f4f3ee] text-[#6b7280] px-3 py-1 rounded-full">
+                    {f.tag}
+                  </span>
+                </div>
+                <h3 className="font-display text-xl font-extrabold text-[#121316] mb-2.5">
+                  {f.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-[#6b7280] leading-relaxed font-medium">
+                  {f.desc}
+                </p>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-black/5 flex items-center justify-between text-xs font-bold text-[#121316] group-hover:text-[#2d62ed] transition-colors">
+                <span>Learn more</span>
+                <span className="card-arrow-btn">↗</span>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-24 md:py-32 bg-ink relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] pointer-events-none mix-blend-overlay"></div>
-        <div className="absolute top-0 right-0 w-[800px] h-full bg-gradient-to-l from-brand-600/20 to-transparent pointer-events-none blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-brand-500/10 rounded-full blur-[120px] pointer-events-none" />
-        
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="font-display text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 tracking-tight"
-          >
-            Ready to launch your brand?
-          </motion.h2>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-lg md:text-xl text-ink-3 mb-10 max-w-2xl mx-auto font-medium"
-          >
-            Join the new generation of D2C founders building better businesses with Nirmaan.
-          </motion.p>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-col sm:flex-row gap-5 justify-center"
-          >
-            <Link to="/register">
-              <Button variant="primary" size="lg" className="w-full sm:w-auto px-10 py-4 shadow-xl shadow-brand-500/30 text-base">
-                Start Sourcing Free
+      {/* Business Kit Feature Bento */}
+      <section className="bento-card p-8 md:p-12 bg-white flex flex-col lg:flex-row items-center justify-between gap-12">
+        <div className="max-w-xl">
+          <span className="text-xs font-mono-tech font-bold uppercase tracking-wider text-[#d9ff36] bg-black px-3.5 py-1 rounded-full inline-block mb-4">
+            Exclusive Innovation
+          </span>
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#121316] leading-tight tracking-tight mb-4">
+            The Complete<br />
+            Business Kit.
+          </h2>
+          <p className="text-sm md:text-base text-[#6b7280] leading-relaxed font-medium mb-8">
+            Don't source scattered pieces. Pair your primary manufactured product with matched custom luxury boxes, embossed pouches, and certificate cards from certified packaging partners in one synchronized bundle.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <Link to="/business-kit">
+              <Button variant="primary" size="md" withArrow className="text-xs font-extrabold">
+                Build a Business Kit
               </Button>
             </Link>
+            <Link to="/packaging">
+              <Button variant="secondary" size="md" className="text-xs font-bold">
+                Browse Packaging
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Tactile Stack Visualizer */}
+        <div className="w-full lg:w-auto flex flex-col gap-3">
+          {[
+            { icon: "💎", title: "Custom Sterling Jewelry", spec: "200 units · ₹45/pc", badge: "Primary Product" },
+            { icon: "📦", title: "Magnetic Rigid Box", spec: "200 units · ₹18/pc", badge: "Packaging" },
+            { icon: "🛍️", title: "Embossed Microfiber Pouch", spec: "200 units · ₹12/pc", badge: "Insert" },
+            { icon: "💌", title: "Thank You & Authenticity Card", spec: "200 units · ₹4/pc", badge: "Print Collateral" },
+          ].map((item, idx) => (
+            <div
+              key={idx}
+              className="bg-[#f9f8f5] hover:bg-white border border-black/5 p-4 rounded-2xl flex items-center justify-between gap-6 shadow-sm hover:shadow-md transition-all sm:w-[380px]"
+            >
+              <div className="flex items-center gap-3.5">
+                <span className="text-2xl w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                  {item.icon}
+                </span>
+                <div>
+                  <p className="text-xs font-bold text-[#121316]">{item.title}</p>
+                  <p className="text-[11px] font-mono-tech text-[#6b7280]">{item.spec}</p>
+                </div>
+              </div>
+              <span className="text-[10px] font-mono-tech font-bold uppercase tracking-wider text-[#2d62ed] bg-[#eff6ff] px-2.5 py-1 rounded-full">
+                {item.badge}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* High-Voltage Bottom CTA Bento */}
+      <section className="bento-card p-10 md:p-14 bg-[#111111] text-white text-center flex flex-col items-center justify-center relative overflow-hidden shadow-2xl">
+        <div
+          className="floating-orb w-96 h-96 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+          style={{
+            background: "radial-gradient(circle, rgba(217, 255, 54, 0.2) 0%, rgba(45, 98, 237, 0.15) 60%, transparent 80%)"
+          }}
+        />
+
+        <div className="relative z-10 max-w-2xl mx-auto">
+          <span className="inline-flex items-center gap-2 bg-white/10 text-[#d9ff36] text-xs font-mono-tech font-bold uppercase tracking-wider px-4 py-1.5 rounded-full mb-6 border border-white/10 backdrop-blur-md">
+            Ready to Launch Your Next Line?
+          </span>
+
+          <h2 className="font-display text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
+            Source with Precision.<br />
+            Ship with Confidence.
+          </h2>
+
+          <p className="text-sm md:text-base text-slate-300 font-medium mb-8 max-w-lg mx-auto">
+            Join 1,200+ brands sourcing with verified factories, upfront sample validation, and escrow protection.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <Link to="/register" className="cta-lime-btn text-base px-8 py-3.5">
+              <span>Create Free Account</span>
+              <div className="cta-arrow-circle w-9 h-9 text-base">↗</div>
+            </Link>
             <Link to="/manufacturers">
-              <Button size="lg" className="w-full sm:w-auto px-10 py-4 bg-white/5 text-white hover:bg-white/10 border border-white/10 backdrop-blur-md transition-all text-base">
+              <Button variant="outline" size="lg" className="bg-transparent text-white border-white/20 hover:bg-white/10 text-sm font-extrabold">
                 Browse Directory
               </Button>
             </Link>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-ink py-16 border-t border-ink-2/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="font-display font-extrabold text-white text-xl leading-none">N</span>
-              </div>
-              <span className="font-display font-bold text-white text-2xl tracking-tight">Nirmaan.</span>
-            </div>
-            
-            <div className="flex flex-wrap justify-center gap-6 md:gap-8 text-sm font-semibold text-ink-3">
-              <Link to="/how-it-works" className="hover:text-white transition-colors">How it works</Link>
-              <Link to="/manufacturers" className="hover:text-white transition-colors">Manufacturers</Link>
-              <Link to="/categories" className="hover:text-white transition-colors">Categories</Link>
-              <Link to="/login" className="hover:text-white transition-colors">Login</Link>
-            </div>
+      {/* Footer Inside Chassis */}
+      <footer className="pt-8 pb-4 border-t border-black/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-semibold text-[#6b7280]">
+        <div className="flex items-center gap-3">
+          <div className="w-6 h-6 rounded-full bg-[#111111] text-white flex items-center justify-center font-display font-black text-xs">
+            N
           </div>
-          <div className="mt-16 pt-8 border-t border-ink-2/30 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-ink-3">
-            <p>© 2026 Nirmaan Marketplace. All rights reserved.</p>
-            <p className="tracking-widest uppercase">Source. Create. Launch.</p>
-          </div>
+          <span className="text-[#121316] font-display font-extrabold tracking-tight">
+            Nirmaan Sourcing Chassis
+          </span>
+          <span className="text-black/20">|</span>
+          <span>© 2026 Nirmaan Marketplace</span>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-4">
+          <Link to="/how-it-works" className="hover:text-[#121316] transition-colors">How It Works</Link>
+          <Link to="/discover" className="hover:text-[#121316] transition-colors">Catalog</Link>
+          <Link to="/manufacturers" className="hover:text-[#121316] transition-colors">Factories</Link>
+          <Link to="/categories" className="hover:text-[#121316] transition-colors">Categories</Link>
+          <Link to="/login" className="hover:text-[#121316] transition-colors">Console Login</Link>
         </div>
       </footer>
-    </div>
+    </Chassis>
   );
 }

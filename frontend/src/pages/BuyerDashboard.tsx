@@ -7,22 +7,22 @@ import {
 } from "lucide-react";
 import { DashboardNavbar } from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
-import { StatCard, Card, Button, SectionHeader, StatusBadge } from "../components/ui";
+import { StatCard, Card, Button, SectionHeader, StatusBadge, Chassis } from "../components/ui";
 import { useAuth } from "../contexts/AuthContext";
 import api from "../api/client";
 import { motion } from "framer-motion";
 
 export default function BuyerDashboard() {
   return (
-    <div className="h-screen flex flex-col bg-surface">
+    <Chassis>
       <DashboardNavbar userType="buyer" />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar type="buyer" />
-        <main className="flex-1 overflow-y-auto p-6 md:p-8 bg-[#FDFCFB]">
+        <main className="flex-1 overflow-y-auto pr-2">
           <DashboardHome />
         </main>
       </div>
-    </div>
+    </Chassis>
   );
 }
 

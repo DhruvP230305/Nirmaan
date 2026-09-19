@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Search, Factory, FileText, MessageSquare,
-  ShoppingBag, Package2, Star, Bell, Settings, ChevronRight,
+  ShoppingBag, Package2, Star, Bell, Settings,
   BarChart3, Shield, Users, ClipboardList, CreditCard,
   Layers, Box, PackageCheck, FlaskConical,
 } from "lucide-react";
@@ -54,44 +54,58 @@ const adminNav = [
   { label: "Settings", icon: Settings, to: "/admin/settings" },
 ];
 
-export default function Sidebar({ type = "buyer" }: { type?: "buyer" | "manufacturer" | "admin" }) {
+export default function Sidebar({
+  type = "buyer",
+}: {
+  type?: "buyer" | "manufacturer" | "admin";
+}) {
   const loc = useLocation();
   const { user } = useAuth();
   const nav = type === "buyer" ? buyerNav : type === "manufacturer" ? manufacturerNav : adminNav;
-  const label = type === "buyer" ? "Buyer Portal" : type === "manufacturer" ? "Manufacturer Portal" : "Admin Panel";
+  const label =
+    type === "buyer"
+      ? "Buyer Console"
+      : type === "manufacturer"
+      ? "Mfr Console"
+      : "Admin Console";
 
-  const displayName = user?.companyName || user?.name || (type === "buyer" ? "My Account" : type === "manufacturer" ? "Manufacturer" : "Admin");
+  const displayName =
+    user?.companyName ||
+    user?.name ||
+    (type === "buyer" ? "Jai Duggal" : type === "manufacturer" ? "Artisan Metals" : "Admin");
   const initials = displayName.substring(0, 2).toUpperCase();
 
   return (
-    <aside className="w-64 shrink-0 bg-white border-r border-border flex flex-col h-full overflow-y-auto hidden md:flex">
-      <div className="px-5 py-4 border-b border-border bg-surface/30">
-        <span className="text-[11px] font-bold text-ink-3 uppercase tracking-widest">{label}</span>
+    <aside className="w-64 shrink-0 bg-white/90 backdrop-blur-md border border-white/80 rounded-[28px] shadow-[var(--shadow-card)] flex flex-col h-[calc(100vh-140px)] sticky top-6 overflow-hidden hidden md:flex mr-6">
+      <div className="px-5 py-4 border-b border-black/5 flex items-center justify-between">
+        <span className="text-[11px] font-mono-tech font-extrabold text-[#6b7280] uppercase tracking-widest">
+          {label}
+        </span>
+        <span className="w-2 h-2 rounded-full bg-[#10b981]" />
       </div>
-      
-      <nav className="flex-1 px-3 py-4 flex flex-col gap-1 overflow-y-auto">
+
+      <nav className="flex-1 px-3 py-3 flex flex-col gap-1 overflow-y-auto">
         {nav.map((item) => {
           const active = loc.pathname === item.to;
           return (
             <Link
               key={item.to}
               to={item.to}
-              className="relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors group"
+              className={`relative flex items-center gap-3 px-3.5 py-2.5 rounded-full text-xs font-bold transition-all group ${
+                active
+                  ? "bg-[#111111] text-white shadow-sm"
+                  : "text-[#6b7280] hover:text-[#121316] hover:bg-[#f4f3ee]"
+              }`}
             >
-              <span className="relative z-10 flex items-center gap-3 w-full">
-                <item.icon size={18} className={active ? "text-brand-600" : "text-ink-3 group-hover:text-ink-2"} />
-                <span className={active ? "text-brand-700" : "text-ink-2 group-hover:text-ink"}>{item.label}</span>
-              </span>
-              
+              <item.icon
+                size={16}
+                className={
+                  active ? "text-[#d9ff36]" : "text-[#6b7280] group-hover:text-[#121316]"
+                }
+              />
+              <span className="truncate">{item.label}</span>
               {active && (
-                <motion.div
-                  layoutId="sidebar-indicator"
-                  className="absolute inset-0 bg-brand-50 rounded-xl z-0"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                />
-              )}
-              {!active && (
-                <div className="absolute inset-0 bg-surface opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-200 z-0" />
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#d9ff36]" />
               )}
             </Link>
           );
@@ -99,16 +113,27 @@ export default function Sidebar({ type = "buyer" }: { type?: "buyer" | "manufact
       </nav>
 
       {/* Profile Section */}
-      <div className="p-4 border-t border-border bg-surface/30">
-        <Link to={type === "buyer" ? "/settings" : type === "manufacturer" ? "/mfr/settings" : "/admin/settings"} className="flex items-center gap-3 p-2 rounded-xl hover:bg-white border border-transparent hover:border-border transition-all group">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-100 to-brand-200 border border-brand-300 flex items-center justify-center text-brand-700 text-xs font-bold shadow-sm">
+      <div className="p-3 border-t border-black/5 bg-[#f9f8f5]/60">
+        <Link
+          to={
+            type === "buyer"
+              ? "/settings"
+              : type === "manufacturer"
+              ? "/mfr/settings"
+              : "/admin/settings"
+          }
+          className="flex items-center gap-3 p-2 rounded-2xl hover:bg-white transition-all group"
+        >
+          <div className="w-8 h-8 rounded-full bg-[#111111] text-white flex items-center justify-center text-xs font-bold shadow-sm group-hover:bg-[#d9ff36] group-hover:text-black transition-colors">
             {initials}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-ink truncate group-hover:text-brand-600 transition-colors">
+            <p className="text-xs font-extrabold text-[#121316] truncate group-hover:text-[#2d62ed] transition-colors">
               {displayName}
             </p>
-            <p className="text-[11px] font-semibold text-ink-3 capitalize tracking-wide">{type}</p>
+            <p className="text-[10px] font-mono-tech font-semibold text-[#6b7280] capitalize">
+              {type} · Active
+            </p>
           </div>
         </Link>
       </div>

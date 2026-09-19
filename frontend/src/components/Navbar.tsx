@@ -1,21 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { Search, Bell, ChevronDown, Menu, X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Search, Bell, ChevronDown, Menu, X, ShoppingBag } from "lucide-react";
+import { useState } from "react";
 import { Button } from "./ui";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const loc = useLocation();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const navLinks = [
     { label: "Find Manufacturers", to: "/manufacturers" },
@@ -25,88 +16,136 @@ export default function Navbar() {
   ];
 
   return (
-    <header 
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        scrolled 
-          ? "glass shadow-sm py-2" 
-          : "bg-white border-b border-border py-3"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
-        <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-sm group-hover:shadow-brand transition-all duration-300">
-            <span className="text-white font-bold text-sm">N</span>
+    <header className="w-full flex flex-col gap-2.5 mb-6">
+      {/* Top Utility Bar */}
+      <div className="flex items-center justify-between text-xs font-semibold text-[#6b7280] px-2 py-1">
+        <div className="flex items-center gap-2">
+          <span className="live-bullet" />
+          <span className="text-[#121316]">500+ Verified Factories Live</span>
+        </div>
+        <div className="hidden sm:flex items-center gap-3">
+          <span>Low MOQs from 50 pcs</span>
+          <span className="text-black/20">•</span>
+          <span>Zero Commission Guarantee</span>
+          <span className="text-black/20">•</span>
+          <div className="bg-white/80 border border-black/5 text-[#121316] font-mono-tech px-2.5 py-0.5 rounded-full shadow-sm text-[11px] font-bold">
+            INR (₹)
           </div>
-          <span className="font-display font-extrabold text-ink text-xl tracking-tight">
-            Nirmaan<span className="text-brand-500">.</span>
+        </div>
+      </div>
+
+      {/* Main Glassmorphic Pill Navbar */}
+      <nav className="bg-white/90 backdrop-blur-md border border-white/80 rounded-full px-4 py-2.5 shadow-[var(--shadow-pill)] flex items-center justify-between gap-3 relative z-30">
+        <Link to="/" className="flex items-center gap-2.5 pl-2 shrink-0 group">
+          <div className="w-9 h-9 rounded-full bg-[#111111] flex items-center justify-center text-white font-display font-extrabold text-base shadow-sm group-hover:bg-[#d9ff36] group-hover:text-black transition-all">
+            N
+          </div>
+          <span className="font-display font-extrabold text-[#121316] text-xl tracking-tight">
+            Nirmaan<span className="text-[#2d62ed]">.</span>
           </span>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-1">
+        {/* Desktop Nav Links */}
+        <div className="hidden lg:flex items-center gap-1 bg-[#f4f3ee]/80 p-1 rounded-full border border-black/5">
           {navLinks.map((l) => {
             const isActive = loc.pathname === l.to;
             return (
               <Link
                 key={l.to}
                 to={l.to}
-                className="relative px-4 py-2 rounded-lg text-sm font-semibold transition-colors group"
+                className={`relative px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+                  isActive
+                    ? "bg-[#111111] text-white shadow-sm"
+                    : "text-[#6b7280] hover:text-[#121316] hover:bg-black/5"
+                }`}
               >
-                <span className={`relative z-10 ${isActive ? "text-brand-600" : "text-ink-2 group-hover:text-ink"}`}>
-                  {l.label}
-                </span>
-                {isActive && (
-                  <motion.div
-                    layoutId="navbar-indicator"
-                    className="absolute inset-0 bg-brand-50 rounded-lg z-0"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
-                {!isActive && (
-                  <div className="absolute inset-0 bg-muted opacity-0 group-hover:opacity-100 rounded-lg transition-opacity duration-200 z-0" />
-                )}
+                {l.label}
               </Link>
             );
           })}
-        </nav>
+        </div>
 
-        <div className="flex items-center gap-3">
+        {/* Right CTA Actions */}
+        <div className="flex items-center gap-2.5">
+          <Link
+            to="/discover"
+            className="hidden md:flex items-center gap-2 bg-[#f4f3ee] text-[#6b7280] hover:text-[#121316] hover:bg-[#ebe9e2] px-3.5 py-1.5 rounded-full text-xs font-medium border border-black/5 transition-colors"
+          >
+            <Search size={13} />
+            <span>Search catalogue...</span>
+          </Link>
+
           <Link to="/login" className="hidden sm:block">
-            <Button variant="ghost" size="sm" className="font-bold">Log in</Button>
+            <Button variant="ghost" size="sm" className="font-bold text-xs">
+              Log in
+            </Button>
           </Link>
-          <Link to="/register">
-            <Button variant="primary" size="sm" className="shadow-brand">Get Started</Button>
+
+          <Link to="/post-requirement">
+            <Button variant="primary" size="sm" withArrow className="text-xs font-extrabold">
+              Post RFQ
+            </Button>
           </Link>
-          <button 
-            className="lg:hidden p-2 text-ink-2 hover:bg-muted rounded-lg transition-colors" 
+
+          <Link
+            to="/orders"
+            className="w-9 h-9 rounded-full bg-[#111111] hover:bg-black text-white flex items-center justify-center relative shadow-sm transition-transform active:scale-95"
+            title="Orders"
+          >
+            <ShoppingBag size={15} />
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#d9ff36] text-[#0d0e11] text-[10px] font-black flex items-center justify-center border-2 border-white">
+              2
+            </span>
+          </Link>
+
+          <button
+            className="lg:hidden p-2 text-[#121316] hover:bg-black/5 rounded-full transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
-      </div>
+      </nav>
 
+      {/* Mobile Drawer */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden border-t border-border bg-white overflow-hidden"
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="lg:hidden bg-white rounded-3xl p-4 border border-black/10 shadow-xl flex flex-col gap-2"
           >
-            <div className="px-4 py-4 flex flex-col gap-2">
-              {navLinks.map((l) => (
-                <Link key={l.to} to={l.to} onClick={() => setMobileOpen(false)}
-                  className={`px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
-                    loc.pathname === l.to ? "bg-brand-50 text-brand-600" : "text-ink-2 hover:bg-muted"
-                  }`}>
-                  {l.label}
-                </Link>
-              ))}
-              <div className="h-px bg-border my-2"></div>
-              <Link to="/login" onClick={() => setMobileOpen(false)} className="px-4 py-3 rounded-xl text-sm font-bold text-ink-2 hover:bg-muted">
-                Log in
+            {navLinks.map((l) => (
+              <Link
+                key={l.to}
+                to={l.to}
+                onClick={() => setMobileOpen(false)}
+                className={`px-4 py-2.5 rounded-full text-sm font-bold transition-colors ${
+                  loc.pathname === l.to
+                    ? "bg-[#111111] text-white"
+                    : "text-[#121316] hover:bg-[#f4f3ee]"
+                }`}
+              >
+                {l.label}
               </Link>
-            </div>
+            ))}
+            <div className="h-px bg-black/5 my-1" />
+            <Link
+              to="/login"
+              onClick={() => setMobileOpen(false)}
+              className="px-4 py-2.5 rounded-full text-sm font-bold text-[#121316] hover:bg-[#f4f3ee]"
+            >
+              Log in
+            </Link>
+            <Link
+              to="/post-requirement"
+              onClick={() => setMobileOpen(false)}
+            >
+              <Button variant="primary" size="md" className="w-full text-center">
+                Start Sourcing Free
+              </Button>
+            </Link>
           </motion.div>
         )}
       </AnimatePresence>
@@ -114,36 +153,63 @@ export default function Navbar() {
   );
 }
 
-export function DashboardNavbar({ userType = "buyer" }: { userType?: "buyer" | "manufacturer" | "admin" }) {
+export function DashboardNavbar({
+  userType = "buyer",
+}: {
+  userType?: "buyer" | "manufacturer" | "admin";
+}) {
   return (
-    <header className="h-16 bg-white border-b border-border flex items-center px-6 gap-4 sticky top-0 z-40">
+    <header className="bg-white/90 backdrop-blur-md border border-white/80 rounded-full px-5 py-3 shadow-[var(--shadow-pill)] flex items-center justify-between gap-4 mb-6 sticky top-4 z-40">
       <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-sm group-hover:shadow-brand transition-all duration-300">
-          <span className="text-white font-bold text-xs">N</span>
+        <div className="w-8 h-8 rounded-full bg-[#111111] flex items-center justify-center text-white font-display font-extrabold text-sm shadow-sm group-hover:bg-[#d9ff36] group-hover:text-black transition-all">
+          N
         </div>
-        <span className="font-display font-bold text-ink text-lg hidden sm:block tracking-tight">
-          Nirmaan<span className="text-brand-500">.</span>
+        <span className="font-display font-extrabold text-[#121316] text-lg hidden sm:block tracking-tight">
+          Nirmaan<span className="text-[#2d62ed]">.</span>
         </span>
       </Link>
 
-      <div className="flex-1" />
+      <div className="flex-1 max-w-md hidden md:block">
+        <div className="flex items-center gap-2 bg-[#f4f3ee] rounded-full px-4 py-2 border border-black/5">
+          <Search size={14} className="text-[#6b7280]" />
+          <input
+            type="text"
+            placeholder="Search orders, suppliers, RFQs..."
+            className="bg-transparent text-xs font-medium text-[#121316] focus:outline-none w-full placeholder:text-[#9ca3af]"
+          />
+        </div>
+      </div>
 
       <div className="flex items-center gap-3">
-        <button className="w-9 h-9 rounded-full hover:bg-surface flex items-center justify-center text-ink-3 relative transition-colors">
-          <Bell size={18} />
-          <span className="absolute top-2 right-2.5 w-2 h-2 bg-brand-500 border-2 border-white rounded-full" />
-        </button>
-        <Link 
-          to={userType === "buyer" ? "/settings" : userType === "manufacturer" ? "/mfr/settings" : "/admin/settings"} 
-          className="flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-full hover:bg-surface border border-transparent hover:border-border transition-all"
+        <Link
+          to="/notifications"
+          className="w-9 h-9 rounded-full bg-[#f4f3ee] hover:bg-[#ebe9e2] flex items-center justify-center text-[#121316] relative transition-colors"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-100 to-brand-200 border border-brand-300 flex items-center justify-center text-brand-700 text-xs font-bold shadow-sm">
+          <Bell size={16} />
+          <span className="absolute top-2 right-2 w-2 h-2 bg-[#d9ff36] rounded-full border border-black" />
+        </Link>
+
+        <Link
+          to={
+            userType === "buyer"
+              ? "/settings"
+              : userType === "manufacturer"
+              ? "/mfr/settings"
+              : "/admin/settings"
+          }
+          className="flex items-center gap-2.5 pl-1 pr-3 py-1 rounded-full bg-[#f4f3ee] hover:bg-[#ebe9e2] border border-black/5 transition-all"
+        >
+          <div className="w-7 h-7 rounded-full bg-[#111111] text-white flex items-center justify-center text-[11px] font-bold shadow-sm">
             {userType === "buyer" ? "JD" : userType === "manufacturer" ? "AM" : "AD"}
           </div>
-          <span className="text-sm font-bold text-ink hidden sm:block">
-            {userType === "buyer" ? "Jai Duggal" : userType === "manufacturer" ? "Artisan Metals" : "Admin"}
+          <span className="text-xs font-bold text-[#121316] hidden sm:block">
+            {userType === "buyer"
+              ? "Jai Duggal"
+              : userType === "manufacturer"
+              ? "Artisan Metals"
+              : "Admin"}
           </span>
-          <ChevronDown size={14} className="text-ink-3" />
+          <ChevronDown size={13} className="text-[#6b7280]" />
         </Link>
       </div>
     </header>

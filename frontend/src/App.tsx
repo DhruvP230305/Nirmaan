@@ -29,7 +29,7 @@ import {
   DashboardNavbar
 } from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
-import { Card, Button, StatusBadge, SectionHeader, StatCard } from "./components/ui";
+import { Card, Button, StatusBadge, SectionHeader, StatCard, Chassis } from "./components/ui";
 import { getOrders } from "./data/store";
 import {
   ShoppingBag, Package2, FileText, Plus, ArrowRight,
@@ -58,52 +58,55 @@ function RequirementsPage() {
   }, []);
 
   return (
-    <div className="h-screen flex flex-col bg-[#FAFAFA]">
+    <Chassis>
       <DashboardNavbar userType="buyer" />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar type="buyer" />
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto pr-2">
           <div className="max-w-4xl">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h1 className="font-display text-2xl font-bold text-[#111827]">My Requirements</h1>
-                <p className="text-sm text-[#6B7280] mt-0.5">Track all your sourcing requests</p>
+                <span className="text-xs font-mono-tech font-bold uppercase tracking-wider text-[#2d62ed]">
+                  Sourcing RFQ Console
+                </span>
+                <h1 className="font-display text-3xl font-extrabold text-[#121316] mt-0.5">My Requirements</h1>
+                <p className="text-xs text-[#6b7280] font-medium mt-1">Track and compare all active manufacturer quotes</p>
               </div>
               <Link to="/post-requirement">
-                <Button variant="primary"><Plus size={15} /> Post Requirement</Button>
+                <Button variant="primary" withArrow><Plus size={14} /> Post Requirement</Button>
               </Link>
             </div>
-            <Card>
+            <div className="bento-card bg-white p-6">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-[#F3F4F6]">
+                    <tr className="border-b border-black/5">
                       {["ID", "Product", "Quantity", "Target Price", "Quotes", "Status", "Date", ""].map((h) => (
-                        <th key={h} className="text-left px-4 py-3 text-xs font-bold text-[#9CA3AF] uppercase tracking-wider">{h}</th>
+                        <th key={h} className="text-left px-4 py-3 text-[11px] font-mono-tech font-bold text-[#6b7280] uppercase tracking-wider">{h}</th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#F3F4F6]">
+                  <tbody className="divide-y divide-black/5">
                     {loading ? (
-                      <tr><td colSpan={8} className="px-4 py-8 text-center text-sm text-[#6B7280]">Loading...</td></tr>
+                      <tr><td colSpan={8} className="px-4 py-8 text-center text-xs text-[#6b7280]">Loading...</td></tr>
                     ) : requirements.length === 0 ? (
-                      <tr><td colSpan={8} className="px-4 py-8 text-center text-sm text-[#6B7280]">No requirements posted yet.</td></tr>
+                      <tr><td colSpan={8} className="px-4 py-8 text-center text-xs text-[#6b7280]">No requirements posted yet.</td></tr>
                     ) : requirements.map((r) => (
-                      <tr key={r.id} className="hover:bg-[#F9FAFB] transition-colors">
-                        <td className="px-4 py-3 text-xs font-mono text-[#6B7280]">{r.id.split('-')[0]}</td>
-                        <td className="px-4 py-3 text-sm font-semibold text-[#111827]">{r.title}</td>
-                        <td className="px-4 py-3 text-sm text-[#374151]">{r.quantity} {r.unit}</td>
-                        <td className="px-4 py-3 text-sm text-[#374151]">{r.targetPrice ? `₹${r.targetPrice}` : "N/A"}</td>
-                        <td className="px-4 py-3">
+                      <tr key={r.id} className="hover:bg-[#f9f8f5] transition-colors">
+                        <td className="px-4 py-3.5 text-xs font-mono-tech font-bold text-[#6b7280]">{r.id.split('-')[0]}</td>
+                        <td className="px-4 py-3.5 text-xs font-bold text-[#121316]">{r.title}</td>
+                        <td className="px-4 py-3.5 text-xs text-[#121316]">{r.quantity} {r.unit}</td>
+                        <td className="px-4 py-3.5 text-xs font-mono-tech font-bold text-[#121316]">{r.targetPrice ? `₹${r.targetPrice}` : "N/A"}</td>
+                        <td className="px-4 py-3.5">
                           {r.quotes && r.quotes.length > 0 ? (
-                            <span className="font-bold text-sm text-[#4F46E5]">{r.quotes.length}</span>
+                            <span className="font-mono-tech font-extrabold text-xs text-[#2d62ed] bg-[#eff6ff] px-2 py-0.5 rounded-full">{r.quotes.length} quotes</span>
                           ) : (
-                            <span className="text-xs text-[#9CA3AF]">—</span>
+                            <span className="text-xs text-[#9ca3af]">—</span>
                           )}
                         </td>
-                        <td className="px-4 py-3"><StatusBadge status={r.status} /></td>
-                        <td className="px-4 py-3 text-xs text-[#9CA3AF]">{new Date(r.createdAt).toLocaleDateString()}</td>
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-3.5"><StatusBadge status={r.status} /></td>
+                        <td className="px-4 py-3.5 text-xs font-mono-tech text-[#9ca3af]">{new Date(r.createdAt).toLocaleDateString()}</td>
+                        <td className="px-4 py-3.5">
                           {r.quotes && r.quotes.length > 0 && (
                             <Link to={`/quotes/${r.id}`}>
                               <Button variant="secondary" size="sm">Compare Quotes</Button>
@@ -115,11 +118,11 @@ function RequirementsPage() {
                   </tbody>
                 </table>
               </div>
-            </Card>
+            </div>
           </div>
         </main>
       </div>
-    </div>
+    </Chassis>
   );
 }
 
@@ -138,77 +141,82 @@ function AdminPortalRoute() {
 function SamplesPage() {
   const sampleSteps = ["Request Sample", "Manufacturer Accepted", "Sample Preparing", "Shipped", "Delivered", "Review Sample"];
   return (
-    <div className="h-screen flex flex-col bg-[#FAFAFA]">
+    <Chassis>
       <DashboardNavbar userType="buyer" />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar type="buyer" />
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto pr-2">
           <div className="max-w-3xl">
-            <h1 className="font-display text-2xl font-bold text-[#111827] mb-6">Sample Requests</h1>
-            <Card className="p-5 mb-4">
+            <span className="text-xs font-mono-tech font-bold uppercase tracking-wider text-[#2d62ed]">
+              Sample Validation Hub
+            </span>
+            <h1 className="font-display text-3xl font-extrabold text-[#121316] mt-0.5 mb-6">Sample Requests</h1>
+            <div className="bento-card p-6 mb-4 bg-white">
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
-                  <p className="font-semibold text-[#111827]">925 Sterling Silver Hoop Earrings</p>
-                  <p className="text-sm text-[#6B7280]">Artisan Metals Co. · REQ-001</p>
+                  <p className="font-display font-extrabold text-lg text-[#121316]">925 Sterling Silver Hoop Earrings</p>
+                  <p className="text-xs text-[#6b7280]">Artisan Metals Co. · REQ-001</p>
                 </div>
-                <StatusBadge status="Shipped" />
+                <StatusBadge status="COMPLETED" />
               </div>
-              <div className="flex items-center gap-0 overflow-x-auto pb-2 mb-4">
+              <div className="flex items-center gap-0 overflow-x-auto pb-2 mb-6">
                 {sampleSteps.map((s, i) => (
                   <div key={s} className="flex items-center">
                     <div className="flex flex-col items-center">
-                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${i <= 3 ? "bg-[#4F46E5] text-white" : "bg-[#F3F4F6] text-[#9CA3AF]"}`}>{i + 1}</div>
-                      <span className="text-[9px] text-[#6B7280] mt-1 text-center max-w-12">{s}</span>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-mono-tech font-bold ${i <= 3 ? "bg-[#111111] text-[#d9ff36]" : "bg-[#f4f3ee] text-[#9ca3af]"}`}>{i + 1}</div>
+                      <span className="text-[10px] font-semibold text-[#6b7280] mt-1 text-center max-w-14">{s}</span>
                     </div>
                     {i < sampleSteps.length - 1 && (
-                      <div className={`h-0.5 w-6 mx-0.5 mb-4 ${i < 3 ? "bg-[#4F46E5]" : "bg-[#E5E7EB]"}`} />
+                      <div className={`h-0.5 w-6 mx-0.5 mb-4 ${i < 3 ? "bg-[#111111]" : "bg-black/10"}`} />
                     )}
                   </div>
                 ))}
               </div>
-              <div className="grid grid-cols-3 gap-4 mb-4">
-                <div className="text-center bg-[#F9FAFB] rounded-lg p-3">
-                  <p className="font-bold text-sm text-[#111827]">₹250</p>
-                  <p className="text-xs text-[#6B7280]">Sample cost</p>
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                <div className="text-center bg-[#f9f8f5] rounded-2xl p-3 border border-black/5">
+                  <p className="font-mono-tech font-extrabold text-sm text-[#121316]">₹250</p>
+                  <p className="text-[11px] font-medium text-[#6b7280]">Sample Cost</p>
                 </div>
-                <div className="text-center bg-[#F9FAFB] rounded-lg p-3">
-                  <p className="font-bold text-sm text-[#111827]">₹120</p>
-                  <p className="text-xs text-[#6B7280]">Shipping</p>
+                <div className="text-center bg-[#f9f8f5] rounded-2xl p-3 border border-black/5">
+                  <p className="font-mono-tech font-extrabold text-sm text-[#121316]">₹120</p>
+                  <p className="text-[11px] font-medium text-[#6b7280]">Express Air Shipping</p>
                 </div>
-                <div className="text-center bg-[#F9FAFB] rounded-lg p-3">
-                  <p className="font-bold text-sm text-[#111827]">Aug 24</p>
-                  <p className="text-xs text-[#6B7280]">Expected delivery</p>
+                <div className="text-center bg-[#f9f8f5] rounded-2xl p-3 border border-black/5">
+                  <p className="font-mono-tech font-extrabold text-sm text-[#2d62ed]">Aug 24</p>
+                  <p className="text-[11px] font-medium text-[#6b7280]">Expected Delivery</p>
                 </div>
               </div>
-              <p className="text-xs text-[#6B7280] mb-4">Tracking: DTDC98234 — In transit</p>
-              <div className="flex gap-2">
+              <p className="text-xs font-mono-tech text-[#6b7280] mb-4">Tracking: DTDC-98234 — In Transit (Customs Cleared)</p>
+              <div className="flex flex-wrap gap-2.5">
                 <Button variant="primary" size="sm" disabled>Approve Sample</Button>
                 <Button variant="outline" size="sm" disabled>Reject Sample</Button>
                 <Button variant="ghost" size="sm" disabled>Request Changes</Button>
               </div>
-              <p className="text-xs text-[#9CA3AF] mt-2">Actions available after delivery</p>
-            </Card>
+              <p className="text-[11px] text-[#9ca3af] mt-2.5">Actions unlock automatically once courier marks delivered</p>
+            </div>
           </div>
         </main>
       </div>
-    </div>
+    </Chassis>
   );
 }
 
 function NotFoundPage() {
   const navigate = useNavigate();
   return (
-    <div className="min-h-screen bg-surface flex items-center justify-center p-6">
-      <div className="text-center max-w-md">
-        <div className="font-display text-8xl font-bold text-brand-500/20 mb-4">404</div>
-        <h1 className="font-display text-2xl font-bold text-ink mb-2">Page not found</h1>
-        <p className="text-sm text-ink-3 mb-8">The page you're looking for doesn't exist or has been moved.</p>
-        <div className="flex gap-3 justify-center">
-          <Button variant="primary" onClick={() => navigate(-1)}>Go back</Button>
-          <Link to="/"><Button variant="outline">Home</Button></Link>
+    <Chassis>
+      <div className="min-h-[70vh] flex items-center justify-center p-6">
+        <div className="bento-card p-12 text-center max-w-md bg-white">
+          <div className="font-display text-7xl font-extrabold text-black/10 mb-2">404</div>
+          <h1 className="font-display text-2xl font-extrabold text-[#121316] mb-2">Page Not Found</h1>
+          <p className="text-xs text-[#6b7280] mb-6">The sourcing link you requested does not exist or has been relocated.</p>
+          <div className="flex gap-3 justify-center">
+            <Button variant="primary" size="sm" onClick={() => navigate(-1)}>Go Back</Button>
+            <Link to="/"><Button variant="outline" size="sm">Home</Button></Link>
+          </div>
         </div>
       </div>
-    </div>
+    </Chassis>
   );
 }
 
